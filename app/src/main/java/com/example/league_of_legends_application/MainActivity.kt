@@ -11,21 +11,19 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -56,18 +54,11 @@ fun LeagueOfLegendsApp() {
 @Composable
 fun ChampionScreen() {
     var champions by remember { mutableStateOf<List<Champion>>(emptyList()) }
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedTag by remember { mutableStateOf<String?>(null) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF0A0F1E), Color(0xFF101820))
-                )
-            )
-            .padding(16.dp)
-    ) {
-        Thread {
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
             try {
                 val url = URL("http://girardon.com.br:3001/champions")
                 with(url.openConnection() as HttpURLConnection) {
@@ -86,23 +77,68 @@ fun ChampionScreen() {
             } catch (e: Exception) {
                 Log.e("Network", "Exception: ${e.localizedMessage}", e)
             }
-        }.start()
+        }
+    }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            item {
-                Text(
-                    text = "Champions",
-                    fontSize = 28.sp,
-                    color = Color(0xFFFFD700),
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
+    val filteredChampions = champions.filter { champion ->
+        champion.name.contains(searchQuery, ignoreCase = true) &&
+                (selectedTag == null || champion.tags.contains(selectedTag))
+    }
+
+    val uniqueTags = champions.flatMap { it.tags }.distinct()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF101820), Color(0xFF0A0F1E))
                 )
+            )
+            .padding(16.dp)
+    ) {
+        Column {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Ex: Ahri") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+            )
+
+            LazyRow(
+                modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                items(uniqueTags) { tag ->
+                    TextButton(
+                        onClick = { selectedTag = if (selectedTag == tag) null else tag },
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text(
+                            text = tag,
+                            color = if (selectedTag == tag) Color(0xFFFFD700) else Color.White
+                        )
+                    }
+                }
             }
 
-            items(champions) { champion ->
-                ChampionCard(champion)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    Text(
+                        text = "Champions",
+                        fontSize = 28.sp,
+                        color = Color(0xFFFFD700),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+                items(filteredChampions) { champion ->
+                    ChampionCard(champion)
+                }
             }
         }
     }
@@ -131,11 +167,6 @@ fun ChampionCard(champion: Champion) {
                     contentDescription = null,
                     modifier = Modifier
                         .size(64.dp)
-                        .background(
-                            Brush.radialGradient(
-                                listOf(Color(0xFFFFD700), Color.Transparent)
-                            )
-                        )
                         .padding(4.dp)
                 )
             }
