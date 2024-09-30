@@ -24,7 +24,7 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF2E3B4E))
+            .background(Color(0xFF0F1923))
             .padding(16.dp)
     ) {
         Row(
@@ -33,16 +33,19 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
         ) {
             Button(
                 onClick = { onBackClick() },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF5A5A5A),
+                    contentColor = Color.White
+                )
             ) {
-                Text(text = "Voltar", color = Color.White)
+                Text(text = "Voltar")
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = champion.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp,
-                color = Color.White
+                color = Color(0xFFDFD79B)
             )
         }
 
@@ -61,7 +64,7 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
                 modifier = Modifier
                     .size(200.dp)
                     .clip(CircleShape)
-                    .border(4.dp, Color.White, CircleShape)
+                    .border(4.dp, Color(0xFFDFD79B), CircleShape)
                     .align(Alignment.CenterHorizontally)
             )
         }
@@ -70,7 +73,7 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
 
         Text(
             text = "Classe: ${champion.tags.joinToString()}",
-            color = Color.Cyan,
+            color = Color(0xFFDFD79B),
             fontSize = 18.sp,
             modifier = Modifier.fillMaxWidth()
         )
@@ -87,17 +90,21 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
     }
 }
 
-
 @Composable
 fun StatsSection(stats: Stats) {
     Column {
-        Text(text = "Atributos", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color.White)
+        Text(
+            text = "Atributos",
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            color = Color.White
+        )
         Spacer(modifier = Modifier.height(8.dp))
 
-        AttributeBar("HP", stats.hp, stats.hpperlevel, Color.Red)
-        AttributeBar("Mana", stats.mp, stats.mpperlevel, Color.Blue)
-        AttributeBar("Dano de Ataque", stats.attackdamage, stats.attackdamageperlevel, Color.Green)
-        AttributeBar("Velocidade de Ataque", (stats.attackspeed * 100).toInt(), (stats.attackspeedperlevel * 100).toInt(), Color.Yellow)
+        AttributeBar("HP", stats.hp, stats.hpperlevel, Color(0xFFFF5353))
+        AttributeBar("Mana", stats.mp, stats.mpperlevel, Color(0xFF5599FF))
+        AttributeBar("Dano de Ataque", stats.attackdamage, stats.attackdamageperlevel, Color(0xFF4CAF50))
+        AttributeBar("Velocidade de Ataque", (stats.attackspeed * 100).toInt(), (stats.attackspeedperlevel * 100).toInt(), Color(0xFFFFC107))
     }
 }
 
@@ -107,7 +114,11 @@ fun AttributeBar(attributeName: String, baseValue: Int, perLevelValue: Int, colo
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
-        Text(text = "$attributeName:", color = Color.White, modifier = Modifier.width(100.dp))
+        Text(
+            text = "$attributeName:",
+            color = Color.White,
+            modifier = Modifier.width(100.dp)
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()

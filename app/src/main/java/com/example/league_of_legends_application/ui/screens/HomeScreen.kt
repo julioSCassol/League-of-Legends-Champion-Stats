@@ -8,9 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.league_of_legends_application.R
 
 @Composable
@@ -18,12 +21,15 @@ fun HomeScreen(onStartClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFF0F1923))
     ) {
         Image(
             painter = painterResource(id = R.drawable.lologo),
             contentDescription = null,
             contentScale = ContentScale.FillBounds,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer(alpha = 0.3f)
         )
 
         Column(
@@ -34,20 +40,28 @@ fun HomeScreen(onStartClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Bem-vindo ao LoL Stats!",
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.White,
+                text = "Bem-Vindo ao League of Legends Champion Stats!",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFDFD79B)
+                ),
                 modifier = Modifier.padding(bottom = 32.dp)
             )
+
             Button(
                 onClick = onStartClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.DarkGray,
+                    containerColor = Color(0xFF1F8B4C),
                     contentColor = Color.White
                 ),
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text("Ver Campeões")
+                Text(
+                    text = "Conheça os Campeões",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

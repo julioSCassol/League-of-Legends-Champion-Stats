@@ -1,6 +1,8 @@
 package com.example.league_of_legends_application.ui.screens
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +22,7 @@ import com.example.league_of_legends_application.utils.loadImageFromUrl
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
 import com.example.league_of_legends_application.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChampionListScreen(
     viewModel: ChampionViewModel,
@@ -37,17 +40,24 @@ fun ChampionListScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color(0xFFDFD79B))
         }
     } else {
-        Column {
+        Column(
+            modifier = Modifier
+                .background(Color(0xFF0F1923))
+                .fillMaxSize()
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick = { onBackClick() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)) {
+                Button(
+                    onClick = { onBackClick() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5A5A5A))
+                ) {
                     Text(text = "Voltar", color = Color.White)
                 }
             }
@@ -55,10 +65,16 @@ fun ChampionListScreen(
             TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text(text = "Buscar campeão...") },
+                placeholder = { Text(text = "Buscar campeão...", color = Color(0xFFDFD79B)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(8.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFF1E2A38),
+                    unfocusedContainerColor = Color(0xFF1E2A38),
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                )
             )
 
             Row(
@@ -73,7 +89,7 @@ fun ChampionListScreen(
                             selectedTag = if (selectedTag == tag) null else tag
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedTag == tag) Color.Gray else Color.LightGray
+                            containerColor = if (selectedTag == tag) Color(0xFFDFD79B) else Color.LightGray
                         )
                     ) {
                         TagIcon(tag = tag)
@@ -121,10 +137,13 @@ fun ChampionCard(champion: Champion, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .animateContentSize(),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1E2A38)
-        )
+            containerColor = Color(0xFF1E2A38),
+            contentColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(8.dp)
     ) {
         Row(
             modifier = Modifier
@@ -149,9 +168,9 @@ fun ChampionCard(champion: Champion, onClick: () -> Unit) {
             Column {
                 Text(
                     text = champion.name,
-                    fontSize = 20.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color(0xFFDFD79B)
                 )
                 Text(
                     text = champion.title,
