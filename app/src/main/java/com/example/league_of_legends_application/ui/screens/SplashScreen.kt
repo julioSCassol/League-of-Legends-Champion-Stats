@@ -28,8 +28,8 @@ fun SplashScreen(onLoadingFinished: () -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "Logo",
+                painter = painterResource(id = R.drawable.lol_icon),
+                contentDescription = "LoL Icon",
                 modifier = Modifier.size(200.dp)
             )
             Text(
@@ -41,7 +41,9 @@ fun SplashScreen(onLoadingFinished: () -> Unit) {
         }
         CircularProgressIndicator(
             color = Color.White,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 32.dp)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 32.dp)
         )
     }
 }

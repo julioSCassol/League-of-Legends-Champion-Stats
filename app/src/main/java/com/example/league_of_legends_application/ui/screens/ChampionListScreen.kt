@@ -1,24 +1,24 @@
 package com.example.league_of_legends_application.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.utils.loadImageFromUrl
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.ImageBitmap
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
-
+import com.example.league_of_legends_application.R
 
 @Composable
 fun ChampionListScreen(
@@ -28,8 +28,8 @@ fun ChampionListScreen(
 ) {
     val champions by viewModel.champions.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    var selectedTag by remember { mutableStateOf("All") }
-    val tags = listOf("All", "Fighter", "Tank", "Mage", "Assassin")
+    var selectedTag by remember { mutableStateOf<String?>(null) }
+    val tags = listOf("Fighter", "Marksman", "Tank", "Mage", "Assassin")
     var searchQuery by remember { mutableStateOf("") }
 
     if (isLoading) {
@@ -42,7 +42,9 @@ fun ChampionListScreen(
     } else {
         Column {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = { onBackClick() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)) {
@@ -67,18 +69,21 @@ fun ChampionListScreen(
             ) {
                 tags.forEach { tag ->
                     Button(
-                        onClick = { selectedTag = tag },
+                        onClick = {
+                            selectedTag = if (selectedTag == tag) null else tag
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (selectedTag == tag) Color.Gray else Color.LightGray
                         )
                     ) {
-                        Text(text = tag)
+                        TagIcon(tag = tag)
                     }
                 }
             }
 
             val filteredChampions = champions.filter {
-                (selectedTag == "All" || it.tags.contains(selectedTag)) && it.name.contains(searchQuery, ignoreCase = true)
+                (selectedTag == null || it.tags.contains(selectedTag)) &&
+                        it.name.contains(searchQuery, ignoreCase = true)
             }
 
             LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
@@ -87,6 +92,26 @@ fun ChampionListScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TagIcon(tag: String) {
+    val iconResId = when (tag) {
+        "Fighter" -> R.drawable.fighter_icon
+        "Marksman" -> R.drawable.marksman_icon
+        "Tank" -> R.drawable.tank_icon
+        "Mage" -> R.drawable.mage_icon
+        "Assassin" -> R.drawable.slayer_icon
+        else -> null
+    }
+
+    iconResId?.let {
+        Image(
+            painter = painterResource(id = it),
+            contentDescription = "$tag icon",
+            modifier = Modifier.size(24.dp)
+        )
     }
 }
 
