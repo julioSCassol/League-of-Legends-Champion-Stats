@@ -1,9 +1,11 @@
 package com.example.league_of_legends_application.ui.screens
 
+import android.media.MediaPlayer
 import androidx.compose.runtime.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -18,9 +20,30 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.model.Stats
 import com.example.league_of_legends_application.utils.loadImageFromUrl
+import androidx.compose.ui.platform.LocalContext
+import com.example.league_of_legends_application.R
+
+object ChampionSounds {
+    fun getSoundResId(championName: String): Int {
+        return when (championName.lowercase()) {
+            "aatrox" -> R.raw.aatrox
+            else -> 0
+        }
+    }
+}
 
 @Composable
 fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
+    val context = LocalContext.current
+    var mediaPlayer: MediaPlayer? by remember { mutableStateOf(null) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,6 +89,15 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
                     .clip(CircleShape)
                     .border(4.dp, Color(0xFFDFD79B), CircleShape)
                     .align(Alignment.CenterHorizontally)
+                    .clickable {
+                        mediaPlayer?.release() // Libera o som anterior, se houver
+                        val soundResId = ChampionSounds.getSoundResId(champion.name)
+                        if (soundResId != 0) {
+                            mediaPlayer = MediaPlayer.create(context, soundResId).apply {
+                                start()
+                            }
+                        }
+                    }
             )
         }
 
