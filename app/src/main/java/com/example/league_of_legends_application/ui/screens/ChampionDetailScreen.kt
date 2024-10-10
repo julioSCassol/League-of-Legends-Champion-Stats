@@ -21,16 +21,7 @@ import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.model.Stats
 import com.example.league_of_legends_application.utils.loadImageFromUrl
 import androidx.compose.ui.platform.LocalContext
-import com.example.league_of_legends_application.R
-
-object ChampionSounds {
-    fun getSoundResId(championName: String): Int {
-        return when (championName.lowercase()) {
-            "aatrox" -> R.raw.aatrox
-            else -> 0
-        }
-    }
-}
+import com.example.league_of_legends_application.utils.ChampionSounds
 
 @Composable
 fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
@@ -90,13 +81,8 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
                     .border(4.dp, Color(0xFFDFD79B), CircleShape)
                     .align(Alignment.CenterHorizontally)
                     .clickable {
-                        mediaPlayer?.release() // Libera o som anterior, se houver
-                        val soundResId = ChampionSounds.getSoundResId(champion.name)
-                        if (soundResId != 0) {
-                            mediaPlayer = MediaPlayer.create(context, soundResId).apply {
-                                start()
-                            }
-                        }
+                        mediaPlayer?.release()
+                        mediaPlayer = ChampionSounds.playChampionSound(context, champion.name)
                     }
             )
         }
