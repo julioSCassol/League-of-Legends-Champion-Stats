@@ -21,6 +21,8 @@ import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.model.Stats
 import com.example.league_of_legends_application.utils.loadImageFromUrl
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.example.league_of_legends_application.R
 import com.example.league_of_legends_application.utils.ChampionSounds
 
 @Composable
@@ -34,6 +36,9 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
             mediaPlayer = null
         }
     }
+
+    // State variable to track if the siren icon should be shown
+    var showSirenIcon by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -72,9 +77,7 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
         }
 
         imageBitmap?.let { bitmap ->
-            Image(
-                bitmap = bitmap,
-                contentDescription = champion.name,
+            Box(
                 modifier = Modifier
                     .size(200.dp)
                     .clip(CircleShape)
@@ -83,8 +86,26 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
                     .clickable {
                         mediaPlayer?.release()
                         mediaPlayer = ChampionSounds.playChampionSound(context, champion.name)
+                        showSirenIcon = false
                     }
-            )
+            ) {
+                Image(
+                    bitmap = bitmap,
+                    contentDescription = champion.name,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (showSirenIcon) {
+                    Image(
+                        painter = painterResource(id = R.drawable.megaphone),
+                        contentDescription = "Siren Icon",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .align(Alignment.TopEnd)
+                            .padding(25.dp)
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
