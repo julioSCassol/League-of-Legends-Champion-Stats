@@ -37,7 +37,6 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
         }
     }
 
-    // State variable to track if the siren icon should be shown
     var showSirenIcon by remember { mutableStateOf(true) }
 
     Column(
