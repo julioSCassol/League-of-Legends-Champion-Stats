@@ -17,7 +17,10 @@ import androidx.compose.ui.unit.sp
 import com.example.league_of_legends_application.R
 
 @Composable
-fun HomeScreen(onStartClick: () -> Unit) {
+fun HomeScreen(
+    onStartClick: () -> Unit,
+    onRandomizerClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -63,6 +66,24 @@ fun HomeScreen(onStartClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = onRandomizerClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFDFD79B),
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Criar Equipes Aleatórias",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
+
