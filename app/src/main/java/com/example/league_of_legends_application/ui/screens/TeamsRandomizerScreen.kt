@@ -1,8 +1,14 @@
 package com.example.league_of_legends_application.ui.screens
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -12,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,7 +34,7 @@ fun ChampionRandomizerScreen(
     viewModel: ChampionViewModel,
     onBackClick: () -> Unit
 ) {
-    val champions by viewModel.champions.collectAsState()
+    val champions by viewModel.champions.collectAsState(initial = emptyList())
     var team1Champions by remember { mutableStateOf<List<Champion>>(emptyList()) }
     var team2Champions by remember { mutableStateOf<List<Champion>>(emptyList()) }
     var teamsRandomized by remember { mutableStateOf(false) }
@@ -39,10 +46,32 @@ fun ChampionRandomizerScreen(
         teamsRandomized = true
     }
 
+    val context = LocalContext.current
+    fun shareTeamsViaWhatsApp() {
+        if (teamsRandomized) {
+            val team1Names = team1Champions.joinToString(", ") { it.name }
+            val team2Names = team2Champions.joinToString(", ") { it.name }
+            val shareText = "Equipe 1: $team1Names\nEquipe 2: $team2Names"
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                setPackage("com.whatsapp")
+                putExtra(Intent.EXTRA_TEXT, shareText)
+            }
+
+            try {
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(context, "WhatsApp não está instalado", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(context, "Por favor, randomize as equipes primeiro", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Randomizar Campeões", color = Color(0xFFDFD79B), fontSize = 20.sp) },
+                title = { Text("Criar Equipes", color = Color(0xFFDFD79B), fontSize = 20.sp) },
                 navigationIcon = {
                     IconButton(onClick = { onBackClick() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = Color.White)
@@ -78,7 +107,8 @@ fun ChampionRandomizerScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (teamsRandomized) {
@@ -86,7 +116,6 @@ fun ChampionRandomizerScreen(
                         "Equipe 1",
                         color = Color(0xFFDFD79B),
                         fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
 
@@ -133,7 +162,6 @@ fun ChampionRandomizerScreen(
                         "Equipe 2",
                         color = Color(0xFFDFD79B),
                         fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
 
@@ -162,6 +190,23 @@ fun ChampionRandomizerScreen(
                         }
                     }
                 }
+            }
+
+            FloatingActionButton(
+                onClick = { shareTeamsViaWhatsApp() },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+                    .size(56.dp),
+                containerColor = Color(0xFF25D366),
+                shape = CircleShape
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.whatsapp),
+                    contentDescription = "Compartilhar no WhatsApp",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
             }
         }
     }
@@ -198,7 +243,6 @@ fun ChampionItem(champion: Champion) {
             text = champion.name,
             color = Color.White,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 4.dp)
         )
     }
