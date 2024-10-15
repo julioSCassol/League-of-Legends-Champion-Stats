@@ -35,23 +35,29 @@ fun ChampionRandomizerScreen(
     onBackClick: () -> Unit
 ) {
     val champions by viewModel.champions.collectAsState(initial = emptyList())
-    var team1Champions by remember { mutableStateOf<List<Champion>>(emptyList()) }
-    var team2Champions by remember { mutableStateOf<List<Champion>>(emptyList()) }
+    var team1Champions by remember { mutableStateOf<Map<String, Champion>>(emptyMap()) }
+    var team2Champions by remember { mutableStateOf<Map<String, Champion>>(emptyMap()) }
     var teamsRandomized by remember { mutableStateOf(false) }
+
+    val roles = listOf("Top", "Jungle", "Mid", "ADC", "Support")
 
     fun randomizeTeams() {
         val shuffledChampions = champions.shuffled()
-        team1Champions = shuffledChampions.take(5)
-        team2Champions = shuffledChampions.drop(5).take(5)
+
+        val team1Roles = roles.zip(shuffledChampions.take(5)).toMap()
+        val team2Roles = roles.zip(shuffledChampions.drop(5).take(5)).toMap()
+
+        team1Champions = team1Roles
+        team2Champions = team2Roles
         teamsRandomized = true
     }
 
     val context = LocalContext.current
     fun shareTeamsViaWhatsApp() {
         if (teamsRandomized) {
-            val team1Names = team1Champions.joinToString(", ") { it.name }
-            val team2Names = team2Champions.joinToString(", ") { it.name }
-            val shareText = "Equipe 1: $team1Names\nEquipe 2: $team2Names"
+            val team1Names = team1Champions.entries.joinToString("\n") { "${it.key}: ${it.value.name}" }
+            val team2Names = team2Champions.entries.joinToString("\n") { "${it.key}: ${it.value.name}" }
+            val shareText = "Equipe 1:\n$team1Names\n\nEquipe 2:\n$team2Names"
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
                 setPackage("com.whatsapp")
@@ -112,80 +118,39 @@ fun ChampionRandomizerScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (teamsRandomized) {
-                    Text(
-                        "Equipe 1",
-                        color = Color(0xFFDFD79B),
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                    roles.forEach { role ->
                         Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            team1Champions.take(3).forEach { champion ->
-                                ChampionItem(champion)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                team1Champions[role]?.let { champion ->
+                                    ChampionItemWithRole(role, champion)
+                                }
                             }
-                        }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                            Image(
+                                painter = painterResource(id = R.drawable.versus),
+                                contentDescription = "Versus",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .padding(horizontal = 16.dp)
+                            )
 
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            team1Champions.drop(3).take(2).forEach { champion ->
-                                ChampionItem(champion)
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Image(
-                        painter = painterResource(id = R.drawable.versus),
-                        contentDescription = "Versus",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(150.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .padding(vertical = 4.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        "Equipe 2",
-                        color = Color(0xFFDFD79B),
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            team2Champions.take(3).forEach { champion ->
-                                ChampionItem(champion)
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            team2Champions.drop(3).take(2).forEach { champion ->
-                                ChampionItem(champion)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                team2Champions[role]?.let { champion ->
+                                    ChampionItemWithRole(role, champion)
+                                }
                             }
                         }
                     }
@@ -213,7 +178,16 @@ fun ChampionRandomizerScreen(
 }
 
 @Composable
-fun ChampionItem(champion: Champion) {
+fun ChampionItemWithRole(role: String, champion: Champion) {
+    val roleDrawable = when (role) {
+        "Top" -> R.drawable.top
+        "Jungle" -> R.drawable.jungle
+        "Mid" -> R.drawable.mid
+        "ADC" -> R.drawable.adc
+        "Support" -> R.drawable.sup
+        else -> R.drawable.versus
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -239,11 +213,26 @@ fun ChampionItem(champion: Champion) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Text(
-            text = champion.name,
-            color = Color.White,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = roleDrawable),
+                contentDescription = role,
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(end = 8.dp)
+            )
+
+            Text(
+                text = champion.name,
+                color = Color.White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
     }
 }
+
