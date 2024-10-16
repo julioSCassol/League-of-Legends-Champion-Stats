@@ -124,7 +124,7 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        StatsSection(stats = champion.stats)
+        StatsSection(stats = champion.stats!!)
     }
 }
 

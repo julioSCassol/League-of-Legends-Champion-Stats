@@ -1,7 +1,13 @@
 package com.example.league_of_legends_application.ui.screens
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,10 +29,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.example.league_of_legends_application.R
 import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.utils.loadImageFromUrl
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
+
+private const val CHANNEL_ID = "team_creation_channel"
+private const val NOTIFICATION_ID = 1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,14 +51,53 @@ fun ChampionRandomizerScreen(
     var team2Champions by remember { mutableStateOf<List<Champion>>(emptyList()) }
     var teamsRandomized by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
+    fun createNotificationChannel(context: Context) {
+        val name = "Team Creation Channel"
+        val descriptionText = "Notificações para a criação de equipes"
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+        }
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    fun sendTeamNotification(context: Context, team1: List<Champion>, team2: List<Champion>) {
+        val team1Names = team1.joinToString(", ") { it.name }
+        val team2Names = team2.joinToString(", ") { it.name }
+        val notificationText = "Equipe 1: $team1Names\nEquipe 2: $team2Names"
+
+        createNotificationChannel(context)
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Equipes Criadas!")
+            .setContentText("Equipes foram randomizadas com sucesso.")
+            .setStyle(NotificationCompat.BigTextStyle().bigText(notificationText))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+    }
+
     fun randomizeTeams() {
         val shuffledChampions = champions.shuffled()
         team1Champions = shuffledChampions.take(5)
         team2Champions = shuffledChampions.drop(5).take(5)
         teamsRandomized = true
+        sendTeamNotification(context, team1Champions, team2Champions)
     }
 
-    val context = LocalContext.current
     fun shareTeamsViaWhatsApp() {
         if (teamsRandomized) {
             val team1Names = team1Champions.joinToString(", ") { it.name }
@@ -112,32 +163,18 @@ fun ChampionRandomizerScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (teamsRandomized) {
-                    Text(
-                        "Equipe 1",
-                        color = Color(0xFFDFD79B),
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-
+                    Text("Equipe 1", color = Color(0xFFDFD79B), fontSize = 22.sp, modifier = Modifier.padding(bottom = 4.dp))
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
+                        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                             team1Champions.take(3).forEach { champion ->
                                 ChampionItem(champion)
                             }
                         }
-
                         Spacer(modifier = Modifier.height(4.dp))
-
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
+                        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                             team1Champions.drop(3).take(2).forEach { champion ->
                                 ChampionItem(champion)
                             }
@@ -158,32 +195,18 @@ fun ChampionRandomizerScreen(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    Text(
-                        "Equipe 2",
-                        color = Color(0xFFDFD79B),
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-
+                    Text("Equipe 2", color = Color(0xFFDFD79B), fontSize = 22.sp, modifier = Modifier.padding(bottom = 4.dp))
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
+                        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                             team2Champions.take(3).forEach { champion ->
                                 ChampionItem(champion)
                             }
                         }
-
                         Spacer(modifier = Modifier.height(4.dp))
-
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
+                        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                             team2Champions.drop(3).take(2).forEach { champion ->
                                 ChampionItem(champion)
                             }
