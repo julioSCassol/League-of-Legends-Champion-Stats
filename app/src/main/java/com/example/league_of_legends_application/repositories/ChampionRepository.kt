@@ -21,9 +21,10 @@ class ChampionRepository(context: Context) {
             put(ChampionDatabaseHelper.COLUMN_NAME, champion.name)
             put(ChampionDatabaseHelper.COLUMN_TITLE, champion.title)
             put(ChampionDatabaseHelper.COLUMN_TAGS, champion.tags.joinToString(","))
-            put(ChampionDatabaseHelper.COLUMN_STATS, serializeStats(champion.stats))
+            put(ChampionDatabaseHelper.COLUMN_STATS, serializeStats(champion
+                .stats!!))
             put(ChampionDatabaseHelper.COLUMN_ICON, champion.icon)
-            put(ChampionDatabaseHelper.COLUMN_SPRITE_URL, champion.sprite.url)
+            put(ChampionDatabaseHelper.COLUMN_SPRITE_URL, champion.sprite!!.url)
             put(ChampionDatabaseHelper.COLUMN_SPRITE_X, champion.sprite.x)
             put(ChampionDatabaseHelper.COLUMN_SPRITE_Y, champion.sprite.y)
             put(ChampionDatabaseHelper.COLUMN_DESCRIPTION, champion.description)
