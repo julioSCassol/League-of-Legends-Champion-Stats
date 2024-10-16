@@ -24,6 +24,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.league_of_legends_application.R
 import com.example.league_of_legends_application.utils.ChampionSounds
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
@@ -39,11 +41,14 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
 
     var showSirenIcon by remember { mutableStateOf(true) }
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF0F1923))
             .padding(16.dp)
+            .verticalScroll(scrollState)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -130,6 +135,8 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
 
 @Composable
 fun StatsSection(stats: Stats) {
+    var hoveredAttribute by remember { mutableStateOf<String?>(null) }
+
     Column {
         Text(
             text = "Atributos",
@@ -137,38 +144,164 @@ fun StatsSection(stats: Stats) {
             fontSize = 20.sp,
             color = Color.White
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-        AttributeBar("HP", stats.hp, stats.hpperlevel, Color(0xFFFF5353))
-        AttributeBar("Mana", stats.mp, stats.mpperlevel, Color(0xFF5599FF))
-        AttributeBar("Dano de Ataque", stats.attackdamage, stats.attackdamageperlevel, Color(0xFF4CAF50))
-        AttributeBar("Velocidade de Ataque", (stats.attackspeed * 100).toInt(), (stats.attackspeedperlevel * 100).toInt(), Color(0xFFFFC107))
+        AttributeBar(
+            attributeName = "Vida Total",
+            baseValue = stats.hp,
+            perLevelValue = stats.hpperlevel,
+            color = Color(0xFFFF5353),
+            iconResId = R.drawable.health,
+            hoveredAttribute = hoveredAttribute,
+            onHover = { hoveredAttribute = "hp" }
+        )
+        if (hoveredAttribute == "hp") {
+            RelatedAttribute(
+                attributeName = "Vida por Nível",
+                value = stats.hpperlevel,
+                iconResId = R.drawable.health
+            )
+        }
+
+        AttributeBar(
+            attributeName = "Mana",
+            baseValue = stats.mp,
+            perLevelValue = stats.mpperlevel,
+            color = Color(0xFF5599FF),
+            iconResId = R.drawable.mana,
+            hoveredAttribute = hoveredAttribute,
+            onHover = { hoveredAttribute = "mp" }
+        )
+        if (hoveredAttribute == "mp") {
+            RelatedAttribute(
+                attributeName = "Mana por Nível",
+                value = stats.mpperlevel,
+                iconResId = R.drawable.mana
+            )
+        }
+
+        AttributeBar(
+            attributeName = "Dano de Ataque",
+            baseValue = stats.attackdamage,
+            perLevelValue = stats.attackdamageperlevel,
+            color = Color(0xFF4CAF50),
+            iconResId = R.drawable.attack,
+            hoveredAttribute = hoveredAttribute,
+            onHover = { hoveredAttribute = "attackdamage" }
+        )
+        if (hoveredAttribute == "attackdamage") {
+            RelatedAttribute(
+                attributeName = "Dano por Nível",
+                value = stats.attackdamageperlevel,
+                iconResId = R.drawable.attack
+            )
+        }
+
+        AttributeBar(
+            attributeName = "Velocidade de Ataque",
+            baseValue = (stats.attackspeed * 100).toInt(),
+            perLevelValue = (stats.attackspeedperlevel * 100).toInt(),
+            color = Color(0xFFFFC107),
+            iconResId = R.drawable.attack_speed,
+            hoveredAttribute = hoveredAttribute,
+            onHover = { hoveredAttribute = "attackspeed" }
+        )
+        if (hoveredAttribute == "attackspeed") {
+            RelatedAttribute(
+                attributeName = "Velocidade por Nível",
+                value = (stats.attackspeedperlevel * 100).toInt(),
+                iconResId = R.drawable.attack_speed
+            )
+        }
     }
 }
 
 @Composable
-fun AttributeBar(attributeName: String, baseValue: Int, perLevelValue: Int, color: Color) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 4.dp)
+fun AttributeBar(
+    attributeName: String,
+    baseValue: Int,
+    perLevelValue: Int,
+    color: Color,
+    iconResId: Int,
+    hoveredAttribute: String?,
+    onHover: () -> Unit
+) {
+    val barFixedWidth = 250.dp
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onHover)
     ) {
         Text(
-            text = "$attributeName:",
+            text = attributeName,
             color = Color.White,
-            modifier = Modifier.width(100.dp)
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 2.dp)
         )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(16.dp)
-                .background(Color.Gray)
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .width((baseValue / 10).dp)
-                    .background(color)
-            )
+                    .width(barFixedWidth)
+                    .height(20.dp)
+                    .background(Color.Gray)
+            ) {
+                val barWidth = (baseValue.toFloat() / 1000) * barFixedWidth.value
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(barWidth.dp)
+                        .background(color)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "$baseValue",
+                    color = Color.LightGray,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+
+                Image(
+                    painter = painterResource(id = iconResId),
+                    contentDescription = attributeName,
+                    modifier = Modifier
+                        .size(24.dp)
+                )
+            }
         }
+    }
+}
+
+@Composable
+fun RelatedAttribute(attributeName: String, value: Int, iconResId: Int) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+    ) {
+        Text(
+            text = "$attributeName: $value",
+            color = Color.LightGray,
+            fontSize = 14.sp
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Image(
+            painter = painterResource(id = iconResId),
+            contentDescription = attributeName,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }

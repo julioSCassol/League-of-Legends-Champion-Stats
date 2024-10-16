@@ -53,6 +53,7 @@ fun ChampionRandomizerScreen(
     }
 
     val context = LocalContext.current
+
     fun shareTeamsViaWhatsApp() {
         if (teamsRandomized) {
             val team1Names = team1Champions.entries.joinToString("\n") { "${it.key}: ${it.value.name}" }
@@ -73,6 +74,7 @@ fun ChampionRandomizerScreen(
             Toast.makeText(context, "Por favor, randomize as equipes primeiro", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     Scaffold(
         topBar = {
