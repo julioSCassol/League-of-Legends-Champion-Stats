@@ -9,6 +9,7 @@ sealed class Screen {
     data object Home : Screen()
     data object ChampionList : Screen()
     data class ChampionDetail(val champion: Champion) : Screen()
+    data object TeamsRandomizerScreen : Screen()
 }
 
 @Composable
@@ -20,19 +21,37 @@ fun AppNavigation(viewModel: ChampionViewModel) {
     }
 
     when (val screen = currentScreen) {
-        is Screen.Home -> HomeScreen(onStartClick = {
-            currentScreen = Screen.ChampionList
-        })
+        is Screen.Home -> HomeScreen(
+            onStartClick = {
+                currentScreen = Screen.ChampionList
+            },
+            onRandomizerClick = {
+                currentScreen = Screen.TeamsRandomizerScreen
+            }
+        )
 
-        is Screen.ChampionList -> ChampionListScreen(viewModel, onChampionClick = {
-            currentScreen = Screen.ChampionDetail(it)
-        }, onBackClick = {
-            currentScreen = Screen.Home
-        })
+        is Screen.ChampionList -> ChampionListScreen(
+            viewModel = viewModel,
+            onChampionClick = {
+                currentScreen = Screen.ChampionDetail(it)
+            },
+            onBackClick = {
+                currentScreen = Screen.Home
+            }
+        )
 
         is Screen.ChampionDetail -> ChampionDetailScreen(
             champion = screen.champion,
-            onBackClick = { currentScreen = Screen.ChampionList }
+            onBackClick = {
+                currentScreen = Screen.ChampionList
+            }
+        )
+
+        is Screen.TeamsRandomizerScreen -> ChampionRandomizerScreen(
+            viewModel = viewModel,
+            onBackClick = {
+                currentScreen = Screen.Home
+            }
         )
     }
 }
