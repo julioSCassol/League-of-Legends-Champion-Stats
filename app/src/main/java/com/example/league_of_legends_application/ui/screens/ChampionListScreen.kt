@@ -22,7 +22,6 @@ import com.example.league_of_legends_application.utils.loadImageFromUrl
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
 import com.example.league_of_legends_application.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChampionListScreen(
     viewModel: ChampionViewModel,

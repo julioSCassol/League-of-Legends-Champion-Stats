@@ -1,7 +1,13 @@
 package com.example.league_of_legends_application.ui.screens
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,10 +29,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.example.league_of_legends_application.R
 import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.utils.loadImageFromUrl
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
+
+private const val CHANNEL_ID = "team_creation_channel"
+private const val NOTIFICATION_ID = 1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,8 +50,45 @@ fun ChampionRandomizerScreen(
     var team1Champions by remember { mutableStateOf<Map<String, Champion>>(emptyMap()) }
     var team2Champions by remember { mutableStateOf<Map<String, Champion>>(emptyMap()) }
     var teamsRandomized by remember { mutableStateOf(false) }
-
     val roles = listOf("Top", "Jungle", "Mid", "ADC", "Support")
+    val context = LocalContext.current
+
+    fun createNotificationChannel(context: Context) {
+        val name = "Team Creation Channel"
+        val descriptionText = "Notificações para a criação de equipes"
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+        }
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    fun sendTeamNotification(context: Context, team1: Map<String, Champion>, team2: Map<String, Champion>) {
+        val team1Names = team1.values.joinToString(", ") { it.name }
+        val team2Names = team2.values.joinToString(", ") { it.name }
+        val notificationText = "Equipe 1: $team1Names\nEquipe 2: $team2Names"
+
+        createNotificationChannel(context)
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Equipes Criadas!")
+            .setContentText("Equipes foram randomizadas com sucesso.")
+            .setStyle(NotificationCompat.BigTextStyle().bigText(notificationText))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+    }
 
     fun randomizeTeams() {
         val shuffledChampions = champions.shuffled()
@@ -50,9 +99,8 @@ fun ChampionRandomizerScreen(
         team1Champions = team1Roles
         team2Champions = team2Roles
         teamsRandomized = true
+        sendTeamNotification(context, team1Champions, team2Champions)
     }
-
-    val context = LocalContext.current
 
     fun shareTeamsViaWhatsApp() {
         if (teamsRandomized) {
@@ -74,7 +122,6 @@ fun ChampionRandomizerScreen(
             Toast.makeText(context, "Por favor, randomize as equipes primeiro", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -223,18 +270,15 @@ fun ChampionItemWithRole(role: String, champion: Champion) {
                 contentDescription = role,
                 modifier = Modifier
                     .size(24.dp)
-                    .padding(end = 8.dp)
+                    .padding(end = 4.dp)
             )
 
             Text(
                 text = champion.name,
-                color = Color.White,
                 fontSize = 14.sp,
+                color = Color.White,
                 fontWeight = FontWeight.Bold
             )
         }
-
-        Spacer(modifier = Modifier.height(4.dp))
     }
 }
-
