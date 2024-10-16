@@ -7,9 +7,9 @@ data class Champion(
     val title: String,
     val tags: List<String>,
     val icon: String,
-    val sprite: Sprite,
+    val sprite: Sprite?,
     val description: String,
-    val stats: Stats
+    val stats: Stats?
 )
 
 data class Sprite(

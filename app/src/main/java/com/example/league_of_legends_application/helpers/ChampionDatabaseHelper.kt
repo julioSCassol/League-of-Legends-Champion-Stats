@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class ChampionDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_NAME = "champions.db"
+        const val DATABASE_NAME = "champions.db"
         private const val DATABASE_VERSION = 1
         const val TABLE_NAME = "champions"
         const val COLUMN_ID = "id"

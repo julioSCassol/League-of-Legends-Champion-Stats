@@ -51,23 +51,61 @@ android {
 }
 
 dependencies {
-    implementation ("androidx.compose.ui:ui:1.3.0")
+    // OkHttp for networking
+    implementation(libs.okhttp)
+    implementation(libs.core)
+
+    // MockWebServer for testing
+    testImplementation(libs.mockwebserver)
+
+    // Turbine for testing Kotlin Flow emissions
+    testImplementation(libs.turbine)
+
+    // Mockito for mocking
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockito.kotlin)
+
+    // Coroutines Test for coroutine-based testing
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.core.testing)
+
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.ui.test.junit4.android)
+    testImplementation(libs.androidx.ui.test.junit4.android)
+
+    testImplementation(libs.mockk)
+
+    // Core AndroidX Testing
+    androidTestImplementation(libs.androidx.core.testing)
+
+    // Compose dependencies
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.material3)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.runtime)
+
+    // Core AndroidX dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+
+    // Firebase dependencies
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging.v2305)
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.junit.ktx)
+
+    // JUnit and testing dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Compose testing dependencies
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.firebase.messaging)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
 }

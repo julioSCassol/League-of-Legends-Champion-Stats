@@ -48,7 +48,7 @@ object ChampionService {
         }
     }
 
-    private fun parseChampions(jsonArray: JSONArray): List<Champion> {
+    fun parseChampions(jsonArray: JSONArray): List<Champion> {
         val champions = mutableListOf<Champion>()
         try {
             for (i in 0 until jsonArray.length()) {
