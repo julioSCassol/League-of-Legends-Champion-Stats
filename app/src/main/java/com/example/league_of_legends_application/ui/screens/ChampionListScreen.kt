@@ -24,12 +24,12 @@ import com.example.league_of_legends_application.R
 
 @Composable
 fun ChampionListScreen(
-    viewModel: ChampionViewModel,
+    championViewModel: ChampionViewModel,
     onChampionClick: (Champion) -> Unit,
     onBackClick: () -> Unit
 ) {
-    val champions by viewModel.champions.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+    val champions by championViewModel.champions.collectAsState()
+    val isLoading by championViewModel.isLoading.collectAsState()
     var selectedTag by remember { mutableStateOf<String?>(null) }
     val tags = listOf("Fighter", "Marksman", "Tank", "Mage", "Assassin")
     var searchQuery by remember { mutableStateOf("") }
@@ -120,7 +120,7 @@ fun ChampionListScreen(
                         )
                     } else {
                         LaunchedEffect(Unit) {
-                            viewModel.loadNextPage()
+                            championViewModel.loadNextPage()
                         }
                     }
                 }

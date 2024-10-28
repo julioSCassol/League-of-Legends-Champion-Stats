@@ -11,6 +11,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -34,8 +35,10 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.league_of_legends_application.R
 import com.example.league_of_legends_application.model.Champion
+import com.example.league_of_legends_application.model.Item
 import com.example.league_of_legends_application.utils.loadImageFromUrl
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
+import com.example.league_of_legends_application.viewmodel.ItemViewModel
 
 private const val CHANNEL_ID = "team_creation_channel"
 private const val NOTIFICATION_ID = 1
@@ -44,6 +47,7 @@ private const val NOTIFICATION_ID = 1
 @Composable
 fun ChampionRandomizerScreen(
     viewModel: ChampionViewModel,
+    itemViewModel: ItemViewModel,
     onBackClick: () -> Unit
 ) {
     val champions by viewModel.champions.collectAsState()
@@ -188,7 +192,7 @@ fun ChampionRandomizerScreen(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 team1Champions[role]?.let { champion ->
-                                    ChampionItemWithRole(role, champion)
+                                    ChampionItemWithRole(role, champion, itemViewModel)
                                 }
                             }
 
@@ -206,7 +210,7 @@ fun ChampionRandomizerScreen(
                                 modifier = Modifier.weight(1f)
                             ) {
                                 team2Champions[role]?.let { champion ->
-                                    ChampionItemWithRole(role, champion)
+                                    ChampionItemWithRole(role, champion, itemViewModel)
                                 }
                             }
                         }
@@ -235,7 +239,7 @@ fun ChampionRandomizerScreen(
 }
 
 @Composable
-fun ChampionItemWithRole(role: String, champion: Champion) {
+fun ChampionItemWithRole(role: String, champion: Champion, itemViewModel: ItemViewModel) {
     val roleDrawable = when (role) {
         "Top" -> R.drawable.top
         "Jungle" -> R.drawable.jungle
@@ -245,6 +249,15 @@ fun ChampionItemWithRole(role: String, champion: Champion) {
         else -> R.drawable.versus
     }
 
+    var selectedItems by remember { mutableStateOf<List<Item>>(emptyList()) }
+    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+
+    LaunchedEffect(champion.icon) {
+        imageBitmap = loadImageFromUrl(champion.icon)
+        itemViewModel.fetchRandomItems(6)
+        selectedItems = itemViewModel.items.value
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -252,12 +265,6 @@ fun ChampionItemWithRole(role: String, champion: Champion) {
             .padding(8.dp)
             .background(Color(0xFF1A2634), shape = MaterialTheme.shapes.medium)
     ) {
-        var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-
-        LaunchedEffect(champion.icon) {
-            imageBitmap = loadImageFromUrl(champion.icon)
-        }
-
         imageBitmap?.let {
             Image(
                 bitmap = it,
@@ -270,9 +277,7 @@ fun ChampionItemWithRole(role: String, champion: Champion) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = roleDrawable),
                 contentDescription = role,
@@ -288,5 +293,37 @@ fun ChampionItemWithRole(role: String, champion: Champion) {
                 fontWeight = FontWeight.Bold
             )
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp)
+        ) {
+            selectedItems.forEach { item ->
+                ItemImage(item)
+            }
+        }
+    }
+}
+
+@Composable
+fun ItemImage(item: Item) {
+    var itemImage by remember { mutableStateOf<ImageBitmap?>(null) }
+
+    LaunchedEffect(item.icon) {
+        itemImage = loadImageFromUrl(item.icon)
+    }
+
+    itemImage?.let {
+        Image(
+            bitmap = it,
+            contentDescription = item.name,
+            modifier = Modifier
+                .size(40.dp)
+                .padding(4.dp)
+        )
     }
 }

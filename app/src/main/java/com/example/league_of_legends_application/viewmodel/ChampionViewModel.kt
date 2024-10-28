@@ -17,12 +17,11 @@ class ChampionViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
     private val currentPage = MutableStateFlow(1)
-    private val totalPages = 15
     private val pageSize = 20
     private val TAG = "ChampionViewModel"
 
     init {
-        fetchChampions()
+        fetchAllChampions()
     }
 
     private fun fetchChampions(page: Int = 1, size: Int = pageSize) {
@@ -30,7 +29,12 @@ class ChampionViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 val fetchedChampions = ChampionService.fetchChampions(size, page)
-                _champions.value += fetchedChampions
+                if (fetchedChampions.isNotEmpty()) {
+                    _champions.value += fetchedChampions
+                    currentPage.value = page + 1
+                } else {
+                    _isLoading.value = false
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching champions: ${e.localizedMessage}")
             } finally {
@@ -42,17 +46,17 @@ class ChampionViewModel : ViewModel() {
     fun fetchAllChampions() {
         viewModelScope.launch {
             _isLoading.value = true
-            var currentPage = 1
             val allChampions = mutableListOf<Champion>()
+            var page = 1
 
-            while (currentPage <= totalPages) {
+            while (true) {
                 try {
-                    val pageChampions = ChampionService.fetchChampions(pageSize, currentPage)
+                    val pageChampions = ChampionService.fetchChampions(pageSize, page)
                     if (pageChampions.isEmpty()) break
                     allChampions.addAll(pageChampions)
-                    currentPage++
+                    page++
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error fetching champions on page $currentPage: ${e.localizedMessage}")
+                    Log.e(TAG, "Error fetching champions on page $page: ${e.localizedMessage}")
                     break
                 }
             }
@@ -63,7 +67,7 @@ class ChampionViewModel : ViewModel() {
     }
 
     fun loadNextPage() {
-        if (currentPage.value < totalPages && !_isLoading.value) {
+        if (!_isLoading.value) {
             fetchChampions(page = currentPage.value + 1)
         }
     }

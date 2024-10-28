@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*
 import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
+import com.example.league_of_legends_application.viewmodel.ItemViewModel
 
 sealed class Screen {
     data object Home : Screen()
@@ -13,7 +14,8 @@ sealed class Screen {
 }
 
 @Composable
-fun AppNavigation(viewModel: ChampionViewModel) {
+fun AppNavigation(championViewModel: ChampionViewModel, itemViewModel:
+ItemViewModel) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
 
     BackHandler(enabled = currentScreen != Screen.Home) {
@@ -31,7 +33,7 @@ fun AppNavigation(viewModel: ChampionViewModel) {
         )
 
         is Screen.ChampionList -> ChampionListScreen(
-            viewModel = viewModel,
+            championViewModel = championViewModel,
             onChampionClick = {
                 currentScreen = Screen.ChampionDetail(it)
             },
@@ -48,7 +50,8 @@ fun AppNavigation(viewModel: ChampionViewModel) {
         )
 
         is Screen.TeamsRandomizerScreen -> ChampionRandomizerScreen(
-            viewModel = viewModel,
+            viewModel = championViewModel,
+            itemViewModel = itemViewModel,
             onBackClick = {
                 currentScreen = Screen.Home
             }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import com.example.league_of_legends_application.ui.screens.SplashScreen
 import com.example.league_of_legends_application.ui.screens.AppNavigation
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
+import com.example.league_of_legends_application.viewmodel.ItemViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -14,7 +15,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             var showSplashScreen by remember { mutableStateOf(true) }
-            val viewModel = ChampionViewModel()
+            val championViewModel = ChampionViewModel()
+            val itemViewModel = ItemViewModel()
 
             if (showSplashScreen) {
                 SplashScreen(onLoadingFinished = { showSplashScreen = false })
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     showSplashScreen = false
                 }
             } else {
-                AppNavigation(viewModel)
+                AppNavigation(championViewModel, itemViewModel)
             }
         }
     }
