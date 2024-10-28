@@ -34,7 +34,7 @@ fun ChampionListScreen(
     val tags = listOf("Fighter", "Marksman", "Tank", "Mage", "Assassin")
     var searchQuery by remember { mutableStateOf("") }
 
-    if (isLoading) {
+    if (isLoading && champions.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -101,9 +101,28 @@ fun ChampionListScreen(
                         it.name.contains(searchQuery, ignoreCase = true)
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
                 items(filteredChampions) { champion ->
                     ChampionCard(champion = champion, onClick = { onChampionClick(champion) })
+                }
+
+                item {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            color = Color(0xFFDFD79B)
+                        )
+                    } else {
+                        LaunchedEffect(Unit) {
+                            viewModel.loadNextPage()
+                        }
+                    }
                 }
             }
         }

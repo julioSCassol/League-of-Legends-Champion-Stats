@@ -14,9 +14,11 @@ import java.net.URL
 object ChampionService {
     private const val TAG = "ChampionService"
 
-    suspend fun fetchChampions(): List<Champion> {
+    suspend fun fetchChampions(size: Int? = 10, page: Int? = 1):
+            List<Champion> {
         return withContext(Dispatchers.IO) {
-            val url = URL("http://girardon.com.br:3001/champions")
+            val url = URL("http://girardon.com" +
+                    ".br:3001/champions?page=${page}&size=${size}")
             val connection = url.openConnection() as HttpURLConnection
             try {
                 Log.d(TAG, "Attempting to fetch champions")

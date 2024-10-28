@@ -46,13 +46,17 @@ fun ChampionRandomizerScreen(
     viewModel: ChampionViewModel,
     onBackClick: () -> Unit
 ) {
-    val champions by viewModel.champions.collectAsState(initial = emptyList())
+    val champions by viewModel.champions.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     var team1Champions by remember { mutableStateOf<Map<String, Champion>>(emptyMap()) }
     var team2Champions by remember { mutableStateOf<Map<String, Champion>>(emptyMap()) }
     var teamsRandomized by remember { mutableStateOf(false) }
     val roles = listOf("Top", "Jungle", "Mid", "ADC", "Support")
     val context = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchAllChampions()
+    }
     fun createNotificationChannel(context: Context) {
         val name = "Team Creation Channel"
         val descriptionText = "Notificações para a criação de equipes"
@@ -91,15 +95,19 @@ fun ChampionRandomizerScreen(
     }
 
     fun randomizeTeams() {
-        val shuffledChampions = champions.shuffled()
+        if (champions.size >= 10) {
+            val shuffledChampions = champions.shuffled()
 
-        val team1Roles = roles.zip(shuffledChampions.take(5)).toMap()
-        val team2Roles = roles.zip(shuffledChampions.drop(5).take(5)).toMap()
+            val team1Roles = roles.zip(shuffledChampions.take(5)).toMap()
+            val team2Roles = roles.zip(shuffledChampions.drop(5).take(5)).toMap()
 
-        team1Champions = team1Roles
-        team2Champions = team2Roles
-        teamsRandomized = true
-        sendTeamNotification(context, team1Champions, team2Champions)
+            team1Champions = team1Roles
+            team2Champions = team2Roles
+            teamsRandomized = true
+            sendTeamNotification(context, team1Champions, team2Champions)
+        } else {
+            Toast.makeText(context, "Aguarde o carregamento de todos os campeões.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun shareTeamsViaWhatsApp() {
