@@ -2,21 +2,17 @@
     <string name="app_name">League-Of-Legends-Application</string>
     <string name="msg_token_fmt" translatable="false">FCM registration Token: %s</string>
 
-    <!-- Champion Detail Screen -->
     <string name="back_button_label">Voltar</string>
     <string name="champion_class_label">Classe:</string>
     <string name="attributes_label">Atributos:</string>
     <string name="search_placeholder">Buscar campeão...</string>
 
-    <!-- Home Screen -->
     <string name="welcome_message">Bem-Vindo ao League of Legends Champion Stats!</string>
     <string name="explore_champions">Conheça os Campeões</string>
     <string name="create_random_teams">Criar Equipes Aleatórias</string>
 
-    <!-- Splash Screen -->
     <string name="splash_title">League of Legends Champions</string>
 
-    <!-- Randomizer Screen -->
     <string name="create_teams_title">Criar Equipes</string>
     <string name="randomize_button">Randomizar</string>
     <string name="teams_created_notification_title">Equipes Criadas!</string>
@@ -24,7 +20,7 @@
     <string name="whatsapp_share_error">WhatsApp não está instalado</string>
     <string name="randomize_teams_error">Aguarde o carregamento de todos os campeões.</string>
     <string name="share_teams_error">Por favor, randomize as equipes primeiro</string>
-    <string name="item_for_champion">Itens para %1$s</string> <!-- Placeholder for champion name -->
-    <string name="item_price">Price: %1$s</string> <!-- Placeholder for item price -->
-    <string name="versus">Versus</string> <!-- Used for the "versus" image description -->
+    <string name="item_for_champion">Itens para %1$s</string>
+    <string name="item_price">Price: %1$s</string>
+    <string name="versus">Versus</string>
 </resources>
