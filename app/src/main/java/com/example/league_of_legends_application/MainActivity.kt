@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
+import com.example.league_of_legends_application.repositories.ChampionRepository
 import com.example.league_of_legends_application.ui.screens.SplashScreen
 import com.example.league_of_legends_application.ui.screens.AppNavigation
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
@@ -15,7 +16,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             var showSplashScreen by remember { mutableStateOf(true) }
-            val championViewModel = ChampionViewModel()
+            val championRepository = ChampionRepository(context = applicationContext)
+
+            val championViewModel = ChampionViewModel(repository = championRepository)
             val itemViewModel = ItemViewModel()
 
             if (showSplashScreen) {

@@ -26,6 +26,7 @@ import com.example.league_of_legends_application.R
 import com.example.league_of_legends_application.utils.ChampionSounds
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
@@ -61,7 +62,7 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
                     contentColor = Color.White
                 )
             ) {
-                Text(text = "Voltar")
+                Text(text = stringResource(id = R.string.back_button_label))
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(
@@ -115,7 +116,7 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Classe: ${champion.tags.joinToString()}",
+            text = "${stringResource(id = R.string.champion_class_label)} ${champion.tags.joinToString()}",
             color = Color(0xFFDFD79B),
             fontSize = 18.sp,
             modifier = Modifier.fillMaxWidth()
@@ -139,7 +140,7 @@ fun StatsSection(stats: Stats) {
 
     Column {
         Text(
-            text = "Atributos",
+            text = stringResource(id = R.string.attributes_label),
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             color = Color.White
@@ -288,16 +289,14 @@ fun AttributeBar(
 fun RelatedAttribute(attributeName: String, value: Int, iconResId: Int) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+        modifier = Modifier.padding(start = 8.dp)
     ) {
         Text(
             text = "$attributeName: $value",
             color = Color.LightGray,
             fontSize = 14.sp
         )
-
         Spacer(modifier = Modifier.width(4.dp))
-
         Image(
             painter = painterResource(id = iconResId),
             contentDescription = attributeName,
