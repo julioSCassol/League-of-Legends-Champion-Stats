@@ -112,11 +112,21 @@ fun ChampionRandomizerScreen(
             team1Champions = team1Roles
             team2Champions = team2Roles
             teamsRandomized = true
+
+            team1Champions = team1Champions.mapValues { (role, champion) ->
+                champion.copy(items = itemViewModel.getRandomItems(6))
+            }.toMap()
+
+            team2Champions = team2Champions.mapValues { (role, champion) ->
+                champion.copy(items = itemViewModel.getRandomItems(6))
+            }.toMap()
+
             sendTeamNotification(context, team1Champions, team2Champions)
         } else {
             Toast.makeText(context, "Aguarde o carregamento de todos os campeões.", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     fun shareTeamsViaWhatsApp() {
         if (teamsRandomized) {
@@ -255,7 +265,7 @@ fun ChampionItemWithRole(role: String, champion: Champion, itemViewModel: ItemVi
         else -> R.drawable.versus
     }
 
-    var selectedItems by remember { mutableStateOf<List<Item>>(emptyList()) }
+    var selectedItems by remember { mutableStateOf<List<Item>>(champion.items) } // Carregando itens do campeão
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<Item?>(null) }
@@ -263,8 +273,6 @@ fun ChampionItemWithRole(role: String, champion: Champion, itemViewModel: ItemVi
 
     LaunchedEffect(champion.icon) {
         imageBitmap = loadImageFromUrl(champion.icon)
-        itemViewModel.fetchRandomItems(6)
-        selectedItems = itemViewModel.items.value
     }
 
     Column(
