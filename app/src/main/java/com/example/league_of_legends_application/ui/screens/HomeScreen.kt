@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +44,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Bem-Vindo ao League of Legends Champion Stats!",
+                text = stringResource(R.string.welcome_message),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
@@ -61,7 +62,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Conheça os Campeões",
+                    text = stringResource(R.string.explore_champions),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -78,7 +79,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Criar Equipes Aleatórias",
+                    text = stringResource(R.string.create_random_teams),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -86,4 +87,3 @@ fun HomeScreen(
         }
     }
 }
-

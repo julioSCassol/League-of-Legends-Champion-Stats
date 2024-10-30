@@ -16,63 +16,42 @@ class ItemViewModel : ViewModel() {
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
-    private val currentPage = MutableStateFlow(1)
     private val pageSize = 20
+    private val totalItemsNeeded = 180
     private val TAG = "ItemViewModel"
 
     init {
         fetchAllItems()
     }
 
-    private fun fetchItems(page: Int = 1, size: Int = pageSize) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val fetchedItems = ItemService.fetchItems(size, page)
-                if (fetchedItems.isNotEmpty()) {
-                    _items.value += fetchedItems
-                    currentPage.value = page + 1
-                } else {
-                    _isLoading.value = false
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error fetching items: ${e.localizedMessage}")
-            } finally {
-                _isLoading.value = false
-            }
+    private suspend fun fetchItems(page: Int = 1, size: Int = pageSize): List<Item> {
+        return try {
+            ItemService.fetchItems(size, page)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching items: ${e.localizedMessage}")
+            emptyList()
         }
     }
 
-    fun fetchAllItems() {
+    private fun fetchAllItems() {
         viewModelScope.launch {
             _isLoading.value = true
             val allItems = mutableListOf<Item>()
             var page = 1
 
-            while (true) {
-                try {
-                    val pageItems = ItemService.fetchItems(pageSize, page)
-                    if (pageItems.isEmpty()) break
-                    allItems.addAll(pageItems)
-                    page++
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error fetching items on page $page: ${e.localizedMessage}")
-                    break
-                }
+            while (allItems.size < totalItemsNeeded) {
+                val pageItems = fetchItems(pageSize, page)
+                if (pageItems.isEmpty()) break
+                allItems.addAll(pageItems)
+                page++
             }
 
-            _items.value = allItems
+            _items.value = allItems.take(totalItemsNeeded)
             _isLoading.value = false
         }
     }
 
-    fun fetchRandomItems(count: Int = 6) {
-        viewModelScope.launch {
-            if (_items.value.size < count) {
-                fetchAllItems()
-            }
-            _items.value = _items.value.shuffled().take(count)
-        }
+    fun getRandomItems(count: Int): List<Item> {
+        return _items.value.shuffled().take(count)
     }
 }
-

@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -24,18 +25,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.league_of_legends_application.R
 import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.model.Item
+import com.example.league_of_legends_application.utils.formatDescription
 import com.example.league_of_legends_application.utils.loadImageFromUrl
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
 import com.example.league_of_legends_application.viewmodel.ItemViewModel
@@ -82,8 +86,8 @@ fun ChampionRandomizerScreen(
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Equipes Criadas!")
-            .setContentText("Equipes foram randomizadas com sucesso.")
+            .setContentTitle(context.getString(R.string.teams_created_notification_title))
+            .setContentText(context.getString(R.string.teams_created_notification_text))
             .setStyle(NotificationCompat.BigTextStyle().bigText(notificationText))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
@@ -108,11 +112,21 @@ fun ChampionRandomizerScreen(
             team1Champions = team1Roles
             team2Champions = team2Roles
             teamsRandomized = true
+
+            team1Champions = team1Champions.mapValues { (role, champion) ->
+                champion.copy(items = itemViewModel.getRandomItems(6))
+            }.toMap()
+
+            team2Champions = team2Champions.mapValues { (role, champion) ->
+                champion.copy(items = itemViewModel.getRandomItems(6))
+            }.toMap()
+
             sendTeamNotification(context, team1Champions, team2Champions)
         } else {
             Toast.makeText(context, "Aguarde o carregamento de todos os campeões.", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     fun shareTeamsViaWhatsApp() {
         if (teamsRandomized) {
@@ -128,7 +142,7 @@ fun ChampionRandomizerScreen(
             try {
                 context.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
-                Toast.makeText(context, "WhatsApp não está instalado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.whatsapp_share_error), Toast.LENGTH_SHORT).show()
             }
         } else {
             Toast.makeText(context, "Por favor, randomize as equipes primeiro", Toast.LENGTH_SHORT).show()
@@ -138,7 +152,9 @@ fun ChampionRandomizerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Criar Equipes", color = Color(0xFFDFD79B), fontSize = 20.sp) },
+                title = {
+                    Text(
+                        text = context.getString(R.string.create_teams_title), color = Color(0xFFDFD79B), fontSize = 20.sp)},
                 navigationIcon = {
                     IconButton(onClick = { onBackClick() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = Color.White)
@@ -149,7 +165,7 @@ fun ChampionRandomizerScreen(
                         onClick = { randomizeTeams() },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDFD79B))
                     ) {
-                        Text(text = "Randomizar", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text(text = context.getString(R.string.randomize_button), color = Color.Black, fontWeight = FontWeight.Bold)
                     }
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color(0xFF0F1923))
@@ -249,13 +265,14 @@ fun ChampionItemWithRole(role: String, champion: Champion, itemViewModel: ItemVi
         else -> R.drawable.versus
     }
 
-    var selectedItems by remember { mutableStateOf<List<Item>>(emptyList()) }
+    var selectedItems by remember { mutableStateOf<List<Item>>(champion.items) } // Carregando itens do campeão
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedItem by remember { mutableStateOf<Item?>(null) }
+    var showItemDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(champion.icon) {
         imageBitmap = loadImageFromUrl(champion.icon)
-        itemViewModel.fetchRandomItems(6)
-        selectedItems = itemViewModel.items.value
     }
 
     Column(
@@ -264,6 +281,11 @@ fun ChampionItemWithRole(role: String, champion: Champion, itemViewModel: ItemVi
             .width(100.dp)
             .padding(8.dp)
             .background(Color(0xFF1A2634), shape = MaterialTheme.shapes.medium)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = { showDialog = true }
+                )
+            }
     ) {
         imageBitmap?.let {
             Image(
@@ -295,15 +317,86 @@ fun ChampionItemWithRole(role: String, champion: Champion, itemViewModel: ItemVi
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+    }
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp)
-        ) {
-            selectedItems.forEach { item ->
-                ItemImage(item)
+    if (showDialog) {
+        Dialog(onDismissRequest = { showDialog = false }) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = Color(0xFF1A2634)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = "Itens para ${champion.name}",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    selectedItems.forEach { item ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                                .clickable {
+                                    selectedItem = item
+                                    showItemDialog = true
+                                }
+                        ) {
+                            ItemImage(item)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = item.name,
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showItemDialog && selectedItem != null) {
+        Dialog(onDismissRequest = { showItemDialog = false }) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = Color(0xFF1A2634)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    selectedItem?.let { item ->
+                        Text(
+                            text = item.name,
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = formatDescription(item),
+                            color = Color.Gray,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Price: ${item.price.total}",
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                }
             }
         }
     }

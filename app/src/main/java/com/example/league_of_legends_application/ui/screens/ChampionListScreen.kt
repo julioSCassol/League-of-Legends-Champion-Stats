@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,14 +58,14 @@ fun ChampionListScreen(
                     onClick = { onBackClick() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5A5A5A))
                 ) {
-                    Text(text = "Voltar", color = Color.White)
+                    Text(text = stringResource(id = R.string.back_button_label), color = Color.White)
                 }
             }
 
             TextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text(text = "Buscar campeão...", color = Color(0xFFDFD79B)) },
+                placeholder = { Text(text = stringResource(id = R.string.search_placeholder), color = Color(0xFFDFD79B)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),

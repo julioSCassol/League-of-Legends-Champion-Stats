@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.league_of_legends_application.R
 
@@ -33,7 +34,7 @@ fun SplashScreen(onLoadingFinished: () -> Unit) {
                 modifier = Modifier.size(200.dp)
             )
             Text(
-                text = "League of Legends Champions",
+                text = stringResource(R.string.splash_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
                 modifier = Modifier.padding(top = 16.dp)

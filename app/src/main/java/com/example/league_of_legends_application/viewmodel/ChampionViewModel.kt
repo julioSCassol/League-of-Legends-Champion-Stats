@@ -5,11 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.network.ChampionService
+import com.example.league_of_legends_application.repositories.ChampionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ChampionViewModel : ViewModel() {
+class ChampionViewModel(private val repository: ChampionRepository) : ViewModel() {
 
     private val _champions = MutableStateFlow<List<Champion>>(emptyList())
     val champions: StateFlow<List<Champion>> = _champions

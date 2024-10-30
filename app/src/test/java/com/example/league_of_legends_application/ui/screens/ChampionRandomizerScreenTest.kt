@@ -7,6 +7,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.league_of_legends_application.model.Champion
 import com.example.league_of_legends_application.viewmodel.ChampionViewModel
+import com.example.league_of_legends_application.viewmodel.ItemViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,10 +38,11 @@ class ChampionRandomizerScreenTest {
     @Test
     fun testTeamRandomizationUpdatesUI() {
         val mockViewModel = mockk<ChampionViewModel>()
+        val mockItemViewModel = mockk<ItemViewModel>()
         coEvery { mockViewModel.champions } returns MutableStateFlow(testChampions)
 
         composeTestRule.setContent {
-            ChampionRandomizerScreen(viewModel = mockViewModel, onBackClick = {})
+            ChampionRandomizerScreen(viewModel = mockViewModel, itemViewModel = mockItemViewModel, onBackClick = {})
         }
 
         // Click the randomize button
