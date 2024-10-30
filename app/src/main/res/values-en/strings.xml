@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">League-Of-Legends-Application</string>
+    <string name="msg_token_fmt" translatable="false">FCM registration Token: %s</string>
+
+    <string name="back_button_label">Back</string>
+    <string name="champion_class_label">Class:</string>
+    <string name="attributes_label">Attributes:</string>
+    <string name="search_placeholder">Search champion...</string>
+
+    <string name="welcome_message">Welcome to League of Legends Champion Stats!</string>
+    <string name="explore_champions">Explore Champions</string>
+    <string name="create_random_teams">Create Random Teams</string>
+
+    <string name="splash_title">League of Legends Champions</string>
+
+    <string name="create_teams_title">Create Teams</string>
+    <string name="randomize_button">Randomize</string>
+    <string name="teams_created_notification_title">Teams Created!</string>
+    <string name="teams_created_notification_text">Teams have been successfully randomized.</string>
+    <string name="whatsapp_share_error">WhatsApp is not installed</string>
+    <string name="randomize_teams_error">Please wait until all champions are loaded.</string>
+    <string name="share_teams_error">Please randomize the teams first</string>
+    <string name="item_for_champion">Items for %1$s</string>
+    <string name="item_price">Price: %1$s</string>
+    <string name="versus">Versus</string>
+</resources>

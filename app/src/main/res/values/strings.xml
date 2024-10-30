@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">League-Of-Legends-Application</string>
     <string name="msg_token_fmt" translatable="false">FCM registration Token: %s</string>
@@ -21,6 +22,6 @@
     <string name="randomize_teams_error">Aguarde o carregamento de todos os campeões.</string>
     <string name="share_teams_error">Por favor, randomize as equipes primeiro</string>
     <string name="item_for_champion">Itens para %1$s</string>
-    <string name="item_price">Price: %1$s</string>
+    <string name="item_price">Preço: %1$s</string>
     <string name="versus">Versus</string>
 </resources>

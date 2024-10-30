@@ -17,7 +17,7 @@ class ItemViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
     private val pageSize = 20
-    private val totalItemsNeeded = 180
+    private val totalItemsNeeded = 251
     private val TAG = "ItemViewModel"
 
     init {
@@ -41,15 +41,20 @@ class ItemViewModel : ViewModel() {
 
             while (allItems.size < totalItemsNeeded) {
                 val pageItems = fetchItems(pageSize, page)
+                    .filter { it.purchasable && it.price.total > 100 }
+
                 if (pageItems.isEmpty()) break
                 allItems.addAll(pageItems)
                 page++
             }
 
+            Log.d(TAG, "Available items: ${allItems.size}")
+
             _items.value = allItems.take(totalItemsNeeded)
             _isLoading.value = false
         }
     }
+
 
     fun getRandomItems(count: Int): List<Item> {
         return _items.value.shuffled().take(count)

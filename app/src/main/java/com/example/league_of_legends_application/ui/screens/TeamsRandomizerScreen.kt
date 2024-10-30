@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -109,18 +110,15 @@ fun ChampionRandomizerScreen(
             val team1Roles = roles.zip(shuffledChampions.take(5)).toMap()
             val team2Roles = roles.zip(shuffledChampions.drop(5).take(5)).toMap()
 
-            team1Champions = team1Roles
-            team2Champions = team2Roles
+            team1Champions = team1Roles.mapValues { (_, champion) ->
+                champion.copy(items = itemViewModel.getRandomItems(6))
+            }
+
+            team2Champions = team2Roles.mapValues { (_, champion) ->
+                champion.copy(items = itemViewModel.getRandomItems(6))
+            }
+
             teamsRandomized = true
-
-            team1Champions = team1Champions.mapValues { (role, champion) ->
-                champion.copy(items = itemViewModel.getRandomItems(6))
-            }.toMap()
-
-            team2Champions = team2Champions.mapValues { (role, champion) ->
-                champion.copy(items = itemViewModel.getRandomItems(6))
-            }.toMap()
-
             sendTeamNotification(context, team1Champions, team2Champions)
         } else {
             Toast.makeText(context, "Aguarde o carregamento de todos os campeões.", Toast.LENGTH_SHORT).show()
@@ -265,7 +263,7 @@ fun ChampionItemWithRole(role: String, champion: Champion, itemViewModel: ItemVi
         else -> R.drawable.versus
     }
 
-    var selectedItems by remember { mutableStateOf<List<Item>>(champion.items) } // Carregando itens do campeão
+    val selectedItems = champion.items
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<Item?>(null) }
