@@ -17,7 +17,7 @@ import org.robolectric.annotation.Config
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [28], manifest = Config.NONE)
+@Config(sdk = [29], manifest = Config.NONE)
 class ChampionServiceTest {
 
     private lateinit var mockWebServer: MockWebServer
