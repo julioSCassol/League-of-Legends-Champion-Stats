@@ -279,11 +279,7 @@ fun ChampionItemWithRole(role: String, champion: Champion, itemViewModel: ItemVi
             .width(100.dp)
             .padding(8.dp)
             .background(Color(0xFF1A2634), shape = MaterialTheme.shapes.medium)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = { showDialog = true }
-                )
-            }
+            .clickable { showDialog = true }
     ) {
         imageBitmap?.let {
             Image(

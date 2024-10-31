@@ -24,4 +24,13 @@
     <string name="item_for_champion">Itens para %1$s</string>
     <string name="item_price">Preço: %1$s</string>
     <string name="versus">Versus</string>
+
+    <string name="total_health">Vida Total</string>
+    <string name="health_per_level">Vida por Nível</string>
+    <string name="mana">Mana</string>
+    <string name="mana_per_level">Mana por Nível</string>
+    <string name="attack_damage">Dano de Ataque</string>
+    <string name="attack_damage_per_level">Dano por Nível</string>
+    <string name="attack_speed">Velocidade de Ataque</string>
+    <string name="attack_speed_per_level">Velocidade por Nível</string>
 </resources>

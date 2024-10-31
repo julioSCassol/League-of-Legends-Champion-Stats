@@ -148,7 +148,7 @@ fun StatsSection(stats: Stats) {
         Spacer(modifier = Modifier.height(4.dp))
 
         AttributeBar(
-            attributeName = "Vida Total",
+            attributeName = stringResource(id = R.string.total_health),
             baseValue = stats.hp,
             perLevelValue = stats.hpperlevel,
             color = Color(0xFFFF5353),
@@ -158,14 +158,14 @@ fun StatsSection(stats: Stats) {
         )
         if (hoveredAttribute == "hp") {
             RelatedAttribute(
-                attributeName = "Vida por Nível",
+                attributeName = stringResource(id = R.string.health_per_level),
                 value = stats.hpperlevel,
                 iconResId = R.drawable.health
             )
         }
 
         AttributeBar(
-            attributeName = "Mana",
+            attributeName = stringResource(id = R.string.mana),
             baseValue = stats.mp,
             perLevelValue = stats.mpperlevel,
             color = Color(0xFF5599FF),
@@ -175,14 +175,14 @@ fun StatsSection(stats: Stats) {
         )
         if (hoveredAttribute == "mp") {
             RelatedAttribute(
-                attributeName = "Mana por Nível",
+                attributeName = stringResource(id = R.string.mana_per_level),
                 value = stats.mpperlevel,
                 iconResId = R.drawable.mana
             )
         }
 
         AttributeBar(
-            attributeName = "Dano de Ataque",
+            attributeName = stringResource(id = R.string.attack_damage),
             baseValue = stats.attackdamage,
             perLevelValue = stats.attackdamageperlevel,
             color = Color(0xFF4CAF50),
@@ -192,14 +192,14 @@ fun StatsSection(stats: Stats) {
         )
         if (hoveredAttribute == "attackdamage") {
             RelatedAttribute(
-                attributeName = "Dano por Nível",
+                attributeName = stringResource(id = R.string.attack_damage_per_level),
                 value = stats.attackdamageperlevel,
                 iconResId = R.drawable.attack
             )
         }
 
         AttributeBar(
-            attributeName = "Velocidade de Ataque",
+            attributeName = stringResource(id = R.string.attack_speed),
             baseValue = (stats.attackspeed * 100).toInt(),
             perLevelValue = (stats.attackspeedperlevel * 100).toInt(),
             color = Color(0xFFFFC107),
@@ -209,7 +209,7 @@ fun StatsSection(stats: Stats) {
         )
         if (hoveredAttribute == "attackspeed") {
             RelatedAttribute(
-                attributeName = "Velocidade por Nível",
+                attributeName = stringResource(id = R.string.attack_speed_per_level),
                 value = (stats.attackspeedperlevel * 100).toInt(),
                 iconResId = R.drawable.attack_speed
             )
