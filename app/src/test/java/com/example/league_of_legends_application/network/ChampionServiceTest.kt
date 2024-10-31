@@ -1,9 +1,9 @@
 package com.example.league_of_legends_application.network
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.league_of_legends_application.model.Sprite
 import com.example.league_of_legends_application.model.Stats
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONArray
@@ -12,8 +12,12 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
-@RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [28], manifest = Config.NONE)
 class ChampionServiceTest {
 
     private lateinit var mockWebServer: MockWebServer
@@ -21,7 +25,8 @@ class ChampionServiceTest {
     @Before
     fun setup() {
         mockWebServer = MockWebServer()
-        mockWebServer.start(3001)
+        mockWebServer.start()
+        ChampionService.baseUrl = mockWebServer.url("/").toString()
     }
 
     @After
@@ -30,7 +35,7 @@ class ChampionServiceTest {
     }
 
     @Test
-    fun testFetchChampions_success() = runBlocking {
+    fun testFetchChampions_success() = runTest {
         val jsonResponse = """
             [
                 {
@@ -71,8 +76,8 @@ class ChampionServiceTest {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(jsonResponse))
 
         val champions = ChampionService.fetchChampions()
-        assertNotNull(champions)
-        assertEquals(1, champions.size)
+        assertNotNull("Champions list should not be null", champions)
+        assertEquals("Expected 1 champion", 1, champions.size)
 
         val champion = champions[0]
         assertEquals("1", champion.id)
@@ -114,16 +119,16 @@ class ChampionServiceTest {
     }
 
     @Test
-    fun testFetchChampions_failure() = runBlocking {
+    fun testFetchChampions_failure() = runTest {
         mockWebServer.enqueue(MockResponse().setResponseCode(404))
 
         val champions = ChampionService.fetchChampions()
-        assertNotNull(champions)
-        assertTrue(champions.isEmpty())
+        assertNotNull("Champions list should not be null", champions)
+        assertTrue("Champions list should be empty on failure", champions.isEmpty())
     }
 
     @Test
-    fun testParseChampions_invalidData() {
+    fun testParseChampions_invalidData() = runTest {
         val invalidJsonResponse = """
             [
                 {
@@ -141,6 +146,6 @@ class ChampionServiceTest {
 
         val jsonArray = JSONArray(invalidJsonResponse)
         val champions = ChampionService.parseChampions(jsonArray)
-        assertTrue(champions.isEmpty())
+        assertTrue("Champions list should be empty due to invalid data", champions.isEmpty())
     }
 }

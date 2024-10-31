@@ -42,6 +42,7 @@ androidxCoreKtx = "1.6.1"
 junitKtx = "1.2.1"
 core = "1.46.0"
 uiTestJunit4Android = "1.7.3"
+uiTestJunit4Jvmstubs = "1.7.4"
 
 [libraries]
 androidx-activity-compose-v131 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
@@ -92,6 +93,7 @@ core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 core = { group = "com.google.ar", name = "core", version.ref = "core" }
 androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
+androidx-ui-test-junit4-jvmstubs = { group = "androidx.compose.ui", name = "ui-test-junit4-jvmstubs", version.ref = "uiTestJunit4Jvmstubs" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
