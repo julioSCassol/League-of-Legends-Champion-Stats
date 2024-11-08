@@ -83,6 +83,8 @@ dependencies {
     testImplementation(libs.androidx.ui.test.junit4.android)
     testImplementation(libs.mockk)
 
+    implementation(libs.playwright)
+
     // Testes Instrumentados
     androidTestImplementation(libs.androidx.core.testing)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.1") // Substitua pela versão correta
