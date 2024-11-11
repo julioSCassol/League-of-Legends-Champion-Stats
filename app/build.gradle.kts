@@ -106,8 +106,10 @@ tasks.register<JacocoReport>("jacocoTestReportDebug") {
 }
 
 dependencies {
-    implementation(libs.okhttp)
-    implementation(libs.core)
+    // Cucumber dependencies
+    implementation("io.cucumber:cucumber-java:7.20.1")
+    androidTestImplementation ("io.cucumber:cucumber-android:7.20.1")
+    androidTestImplementation ("io.cucumber:cucumber-java:7.20.1") // Ensure you're using the same version
 
     // Testes de Unidade
     testImplementation(libs.mockwebserver)
@@ -117,18 +119,16 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.core.testing)
-    testImplementation("org.robolectric:robolectric:4.10.3") // Atualizado para versão mais recente
+    testImplementation("org.robolectric:robolectric:4.10.3")
     testImplementation(libs.androidx.ui.test.junit4.android)
     testImplementation(libs.mockk)
 
-    implementation(libs.playwright)
-
     // Testes Instrumentados
     androidTestImplementation(libs.androidx.core.testing)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.1") // Substitua pela versão correta
-    androidTestImplementation("androidx.test.ext:junit:1.1.5") // Verifique a versão mais recente
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1") // Verifique a versão mais recente
-    androidTestImplementation("io.mockk:mockk-android:1.13.4") // Para mockk em testes instrumentados
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.1")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("io.mockk:mockk-android:1.13.4")
 
     // Compose UI
     implementation(libs.ui)
