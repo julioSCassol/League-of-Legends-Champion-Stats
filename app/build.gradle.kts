@@ -54,9 +54,10 @@ android {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
 
-    packaging {
+    packagingOptions {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/LICENSE-notice.md"
+            excludes += "META-INF/LICENSE.md"
         }
     }
 
@@ -108,6 +109,7 @@ tasks.register<JacocoReport>("jacocoTestReportDebug") {
 dependencies {
     implementation(libs.okhttp)
     implementation(libs.core)
+    implementation(libs.androidx.uiautomator.v18)
 
     // Testes de Unidade
     testImplementation(libs.mockwebserver)
@@ -122,6 +124,9 @@ dependencies {
     testImplementation(libs.mockk)
 
     implementation(libs.playwright)
+    androidTestImplementation ("androidx.test.uiautomator:uiautomator:2.2.0")
+    androidTestImplementation ("androidx.test:runner:1.4.0")
+    androidTestImplementation ("androidx.test:rules:1.4.0")
 
     // Testes Instrumentados
     androidTestImplementation(libs.androidx.core.testing)
