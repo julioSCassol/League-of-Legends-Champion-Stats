@@ -38,11 +38,17 @@ class ChampionListTest {
         val championListItem = device.findObject(UiSelector().textContains("Aatrox"))
         assertTrue("Champion list did not display", championListItem.exists())
 
-        // clica no primeiro champs da lista
+        // clica no champs
         championListItem.click()
 
         // acha pelo nome do champs
         val championDetailName = device.findObject(UiSelector().textContains("Aatrox"))
         assertTrue("Champion detail screen did not open", championDetailName.exists())
+
+        val championIcon = device.findObject(UiSelector().descriptionContains("Aatrox"))
+        assertTrue("Champion icon did not appear", championIcon.exists())
+        championIcon.click()
+
+        Thread.sleep(5000)
     }
 }

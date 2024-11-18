@@ -32,13 +32,15 @@ class TeamRandomizerTest {
 
         randomizeButton.click()
 
-        device.wait(Until.findObject(By.textContains("Champion Details")), 5000)
+        val whatsapp = device.findObject(UiSelector().description("Compartilhar no WhatsApp"))
+        assertTrue("Botão do WhatsApp não apareceu", whatsapp.exists())
+        whatsapp.click()
 
         val championTextView = device.findObject(
             UiSelector().className("android.widget.TextView").textMatches(".*\\S.*")
         )
 
-        assertTrue("Nenhum campeão encontrado para clique", championTextView.exists())
+        assertTrue("Nenhum campeão encontrado", championTextView.exists())
         championTextView.click()
 
         device.wait(Until.hasObject(By.text("Champion Details")), 5000)
