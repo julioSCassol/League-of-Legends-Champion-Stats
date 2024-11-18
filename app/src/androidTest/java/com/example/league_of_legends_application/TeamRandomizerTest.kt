@@ -24,40 +24,25 @@ class TeamRandomizerTest {
     fun testTeamRandomizationAndDialogNavigation() {
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
-        // Navegar para a tela de criação de equipes
         val randomizerButton = device.findObject(UiSelector().text("Create Random Teams"))
         randomizerButton.click()
 
-        // Clicar no botão para randomizar equipes
         val randomizeButton = device.findObject(UiSelector().text("Randomize"))
         randomizeButton.click()
 
         randomizeButton.click()
 
-        device.wait(Until.findObject(By.textContains("Champion Details")), 5000)
+        val whatsapp = device.findObject(UiSelector().description("Compartilhar no WhatsApp"))
+        assertTrue("Botão do WhatsApp não apareceu", whatsapp.exists())
+        whatsapp.click()
 
-        // Variável para indicar se o dialog do campeão foi aberto
-        var dialogOpened = false
-        val maxAttempts = 3
-        var attempts = 0
+        val championTextView = device.findObject(
+            UiSelector().className("android.widget.TextView").textMatches(".*\\S.*")
+        )
 
-        // Loop para tentar clicar em um campeão até que o dialogo seja aberto
-        while (!dialogOpened && attempts < maxAttempts) {
-            val championTextView = device.findObject(
-                UiSelector().className("android.widget.TextView").textMatches(".*\\S.*")
-            )
-            assertTrue("Nenhum campeão encontrado para clique", championTextView.exists())
-            championTextView.click()
+        assertTrue("Nenhum campeão encontrado", championTextView.exists())
+        championTextView.click()
 
-            // Verificar se o diálogo do campeão foi aberto
-            val championDialog = device.findObject(UiSelector().textContains("Champion Details"))
-            device.wait(Until.hasObject(By.text("Champion Details")), 3000)
-            dialogOpened = championDialog.exists()
-            attempts++
-        }
-
-        val itemImage = device.findObject(UiSelector().className("android.widget.ImageView"))
-        assertTrue("Nenhuma imagem de item encontrada para clique", itemImage.exists())
-        itemImage.click()
+        device.wait(Until.hasObject(By.text("Champion Details")), 5000)
     }
 }
