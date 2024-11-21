@@ -4,7 +4,7 @@ plugins {
     if (System.getenv("CI") == null) {
         id("com.google.gms.google-services")
     }
-    id("jacoco") // Adiciona o plugin Jacoco para cobertura de testes
+    id("jacoco")
 }
 
 android {
@@ -32,6 +32,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            isTestCoverageEnabled = true
+        }
     }
 
     compileOptions {
@@ -51,9 +54,10 @@ android {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
 
-    packaging {
+    packagingOptions {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/LICENSE-notice.md"
+            excludes += "META-INF/LICENSE.md"
         }
     }
 
@@ -68,13 +72,16 @@ tasks.matching { it.name == "processDebugGoogleServices" }.configureEach {
     enabled = System.getenv("CI") == null
 }
 
-// Configuração para relatório Jacoco
-tasks.register("jacocoTestReport", JacocoReport::class) {
-    dependsOn("testDebugUnitTest") // Garante que os testes sejam executados antes
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.register<JacocoReport>("jacocoTestReportDebug") {
+    dependsOn("connectedDebugAndroidTest")
 
     reports {
-        xml.required.set(true) // Relatório XML
-        html.required.set(true) // Relatório HTML
+        xml.required.set(true)
+        html.required.set(true)
     }
 
     val fileFilter = listOf(
@@ -82,19 +89,33 @@ tasks.register("jacocoTestReport", JacocoReport::class) {
         "**/R$*.class",
         "**/BuildConfig.*",
         "**/Manifest*.*",
-        "**/*Test*.*",
-        "android/**/*.*"
+        "**/*Test*.*"
     )
-    val debugTree = fileTree(mapOf("dir" to "$buildDir/tmp/kotlin-classes/debug", "excludes" to fileFilter))
+
+    val debugTree = fileTree("${buildDir}/tmp/kotlin-classes/debug") {
+        exclude(fileFilter)
+    }
+
     sourceDirectories.setFrom(files("src/main/java"))
-    classDirectories.setFrom(files(debugTree))
-    executionData.setFrom(files("$buildDir/jacoco/testDebugUnitTest.exec"))
+    classDirectories.setFrom(
+        fileTree(mapOf(
+            "dir" to "$buildDir/tmp/kotlin-classes/debug",
+            "excludes" to listOf("**/R.class", "**/R$*.class", "**/BuildConfig.*", "**/Manifest*.*")
+        ))
+    )
+    sourceDirectories.setFrom(files("src/main/java"))
+    executionData.setFrom(fileTree(mapOf(
+        "dir" to buildDir,
+        "includes" to listOf("**/*.exec", "**/*.ec")
+    )))
 }
 
 dependencies {
-    // Dependências principais
     implementation(libs.okhttp)
     implementation(libs.core)
+    implementation(libs.androidx.uiautomator.v18)
+    implementation(libs.coil.compose)
+    implementation (libs.coil.gif)
 
     // Testes de Unidade
     testImplementation(libs.mockwebserver)
@@ -107,17 +128,20 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.10.3")
     testImplementation(libs.androidx.ui.test.junit4.android)
     testImplementation(libs.mockk)
-    testImplementation("junit:junit:4.13.2")
+
+    implementation(libs.playwright)
+    androidTestImplementation ("androidx.test.uiautomator:uiautomator:2.2.0")
+    androidTestImplementation ("androidx.test:runner:1.4.0")
+    androidTestImplementation ("androidx.test:rules:1.4.0")
 
     // Testes Instrumentados
     androidTestImplementation(libs.androidx.core.testing)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.test:core:1.5.0")
     androidTestImplementation("io.mockk:mockk-android:1.13.4")
 
-    // UI do Compose
+    // Compose UI
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
@@ -134,12 +158,12 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.androidx.junit.ktx)
 
-    // Testes Gerais
+    // Testes
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // Testes para Compose
+    // Compose Test
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
