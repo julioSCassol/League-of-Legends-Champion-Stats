@@ -3,7 +3,6 @@ package com.example.league_of_legends_application.model
 data class Champion(
     val id: String,
     var items: List<Item> = emptyList(),
-    val key: String,
     val name: String,
     val title: String,
     val tags: List<String>,

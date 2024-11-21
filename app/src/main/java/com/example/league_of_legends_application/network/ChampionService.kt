@@ -62,19 +62,18 @@ object ChampionService {
                 champions.add(
                     Champion(
                         id = jsonObject.getString("id"),
-                        key = jsonObject.getString("key"),
                         name = jsonObject.getString("name"),
                         title = jsonObject.getString("title"),
                         tags = jsonObject.getJSONArray("tags").let { tagsArray ->
                             List(tagsArray.length()) { tagsArray.getString(it) }
                         },
                         icon = jsonObject.getString("icon"),
-                        description = jsonObject.getString("description"),
                         sprite = Sprite(
                             url = spriteObject.getString("url"),
                             x = spriteObject.getInt("x"),
                             y = spriteObject.getInt("y")
                         ),
+                        description = jsonObject.getString("description"),
                         stats = Stats(
                             hp = statsObject.getInt("hp"),
                             hpperlevel = statsObject.getInt("hpperlevel"),

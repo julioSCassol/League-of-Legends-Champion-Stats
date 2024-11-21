@@ -13,9 +13,11 @@ import java.net.URL
 object ItemService {
     private const val TAG = "ItemService"
 
+    var baseUrl: String = "http://girardon.com.br:3001"
+
     suspend fun fetchItems(size: Int? = 10, page: Int? = 1): List<Item> {
         return withContext(Dispatchers.IO) {
-            val url = URL("http://girardon.com.br:3001/items?page=${page}&size=${size}")
+            val url = URL("$baseUrl/items?page=${page}&size=${size}")
             val connection = url.openConnection() as HttpURLConnection
             try {
                 Log.d(TAG, "Attempting to fetch items")
@@ -47,7 +49,7 @@ object ItemService {
         }
     }
 
-    private fun parseItems(jsonArray: JSONArray): List<Item> {
+    fun parseItems(jsonArray: JSONArray): List<Item> {
         val items = mutableListOf<Item>()
         try {
             for (i in 0 until jsonArray.length()) {
@@ -76,3 +78,4 @@ object ItemService {
         return items
     }
 }
+

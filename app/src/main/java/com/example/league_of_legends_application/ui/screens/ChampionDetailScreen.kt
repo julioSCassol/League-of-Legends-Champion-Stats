@@ -44,6 +44,8 @@ fun ChampionDetailScreen(champion: Champion, onBackClick: () -> Unit) {
 
     val scrollState = rememberScrollState()
 
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()

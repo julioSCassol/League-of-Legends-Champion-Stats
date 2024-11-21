@@ -17,7 +17,6 @@ class ChampionRepository(context: Context) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(ChampionDatabaseHelper.COLUMN_ID, champion.id)
-            put(ChampionDatabaseHelper.COLUMN_KEY, champion.key)
             put(ChampionDatabaseHelper.COLUMN_NAME, champion.name)
             put(ChampionDatabaseHelper.COLUMN_TITLE, champion.title)
             put(ChampionDatabaseHelper.COLUMN_TAGS, champion.tags.joinToString(","))
@@ -54,18 +53,17 @@ class ChampionRepository(context: Context) {
         val champion = if (cursor.moveToFirst()) {
             Champion(
                 id = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_ID)),
-                key = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_KEY)),
                 name = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_NAME)),
                 title = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_TITLE)),
                 tags = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_TAGS)).split(","),
-                stats = parseStats(cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_STATS))),
                 icon = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_ICON)),
                 sprite = Sprite(
                     url = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_SPRITE_URL)),
                     x = cursor.getInt(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_SPRITE_X)),
                     y = cursor.getInt(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_SPRITE_Y))
                 ),
-                description = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_DESCRIPTION))
+                description = cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_DESCRIPTION)),
+                stats = parseStats(cursor.getString(cursor.getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_STATS)))
             )
         } else {
             Log.d(TAG, "Champion not found with ID: $id")
@@ -87,18 +85,17 @@ class ChampionRepository(context: Context) {
             while (moveToNext()) {
                 val champion = Champion(
                     id = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_ID)),
-                    key = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_KEY)),
                     name = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_NAME)),
                     title = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_TITLE)),
                     tags = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_TAGS)).split(","),
-                    stats = parseStats(getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_STATS))),
                     icon = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_ICON)),
                     sprite = Sprite(
                         url = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_SPRITE_URL)),
                         x = getInt(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_SPRITE_X)),
                         y = getInt(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_SPRITE_Y))
                     ),
-                    description = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_DESCRIPTION))
+                    description = getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_DESCRIPTION)),
+                    stats = parseStats(getString(getColumnIndexOrThrow(ChampionDatabaseHelper.COLUMN_STATS)))
                 )
                 champions.add(champion)
                 Log.d(TAG, "Champion retrieved: ${champion.name}")

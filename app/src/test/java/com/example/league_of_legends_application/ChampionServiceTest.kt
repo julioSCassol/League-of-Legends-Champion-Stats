@@ -1,7 +1,8 @@
-package com.example.league_of_legends_application.network
+package com.example.league_of_legends_application
 
 import com.example.league_of_legends_application.model.Sprite
 import com.example.league_of_legends_application.model.Stats
+import com.example.league_of_legends_application.network.ChampionService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
@@ -81,7 +82,6 @@ class ChampionServiceTest {
 
         val champion = champions[0]
         assertEquals("1", champion.id)
-        assertEquals("Aatrox", champion.key)
         assertEquals("Aatrox", champion.name)
         assertEquals("the Darkin Blade", champion.title)
         assertEquals("icon_url", champion.icon)

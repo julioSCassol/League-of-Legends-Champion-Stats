@@ -11,7 +11,6 @@ class ChampionDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         private const val DATABASE_VERSION = 1
         const val TABLE_NAME = "champions"
         const val COLUMN_ID = "id"
-        const val COLUMN_KEY = "key"
         const val COLUMN_NAME = "name"
         const val COLUMN_TITLE = "title"
         const val COLUMN_TAGS = "tags"
@@ -27,7 +26,6 @@ class ChampionDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val createTableQuery = """
             CREATE TABLE $TABLE_NAME (
                 $COLUMN_ID TEXT PRIMARY KEY,
-                $COLUMN_KEY TEXT,
                 $COLUMN_NAME TEXT,
                 $COLUMN_TITLE TEXT,
                 $COLUMN_TAGS TEXT,

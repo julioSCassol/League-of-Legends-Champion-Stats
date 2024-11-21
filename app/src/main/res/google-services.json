@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153398660178",
+    "project_id": "uri-mobile",
+    "storage_bucket": "uri-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153398660178:android:8b51e0598dac52c3c1638b",
+        "android_client_info": {
+          "package_name": "com.example.lifecicle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBS7wX6CkqPSLk4vHnh40msKKD7pfFKOzk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
